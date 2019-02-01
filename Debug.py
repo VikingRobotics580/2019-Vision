@@ -6,9 +6,6 @@ import Constants
 import Functions
 logging.basicConfig(level=logging.DEBUG)
 
-"""2017 FRC Vision testing on laptop with Microsoft Lifecam"""
-__author__ = "tedfoodlin"
-
 # Capture video from camera (0 for laptop webcam, 1 for USB camera)
 cap = cv2.VideoCapture(-1)
 
@@ -177,6 +174,4 @@ def main():
     cap.release()
     cv2.destroyAllWindows()
 
-
-if __name__ == '__main__':
     main()
