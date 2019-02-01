@@ -1,8 +1,5 @@
 import numpy as np
 
-"""Important Constants"""
-__author__ = "tedfoodlin"
-
 # HSV range values for testing sample images
 SAMPLE_LOWER = np.array([80, 70, 80])
 SAMPLE_UPPER = np.array([100, 300, 300])

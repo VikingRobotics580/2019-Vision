@@ -2,8 +2,8 @@ import logging
 import cv2
 import time
 from networktables import NetworkTable
-import NerdyConstants
-import NerdyFunctions
+import Constants
+import Functions
 logging.basicConfig(level=logging.DEBUG)
 
 """2017 FRC Vision testing on laptop with Microsoft Lifecam"""
@@ -37,15 +37,15 @@ def main():
     # shooting, gears = check_modes()
 
     # network table setup
-    NetworkTable.setIPAddress("roboRIO-687-FRC.local")
+    NetworkTable.setIPAddress("roboRIO-580-FRC.local")
     NetworkTable.setClientMode()
     NetworkTable.initialize()
-    SmartDashboard = NetworkTable.getTable("NerdyVision")
+    SmartDashboard = NetworkTable.getTable("Vision")
     print("NetworkTables initialized")
 
     # adjust camera settings
-    cap.set(cv2.CAP_PROP_FRAME_WIDTH, NerdyConstants.FRAME_X)
-    cap.set(cv2.CAP_PROP_FRAME_HEIGHT, NerdyConstants.FRAME_Y)
+    cap.set(cv2.CAP_PROP_FRAME_WIDTH, Constants.FRAME_X)
+    cap.set(cv2.CAP_PROP_FRAME_HEIGHT, Constants.FRAME_Y)
     cap.set(cv2.CAP_PROP_EXPOSURE, -8.0)
 
     # set up FPS list and iterator
@@ -54,7 +54,7 @@ def main():
     time_start = time.time()
     camfps = 0
 
-    while 687:
+    while 580:
         ret, frame = cap.read()
 
         # the next 2 lines are for sample image testing for shooting
@@ -69,10 +69,10 @@ def main():
         blur = cv2.GaussianBlur(frame, (11, 11), 0)
 
         # remove everything but specified color
-        res, mask = NerdyFunctions.mask(NerdyConstants.LOWER_GREEN, NerdyConstants.UPPER_GREEN, blur)
+        res, mask = Functions.mask(Constants.LOWER_GREEN, Constants.UPPER_GREEN, blur)
 
         # draw references
-        NerdyFunctions.draw_static(res)
+        Functions.draw_static(res)
 
         # find contour of goal
         _, cnts, _ = cv2.findContours(mask.copy(), cv2.RETR_EXTERNAL,
@@ -88,8 +88,8 @@ def main():
                 # make sure the largest contour is significant
                 area = cv2.contourArea(c)
 
-                if area > NerdyConstants.MIN_BOILER_AREA:
-                    goal = NerdyFunctions.polygon(c, 0)
+                if area > Constants.MIN_BOILER_AREA:
+                    goal = Functions.polygon(c, 0)
 
                     # draw the contour
                     cv2.drawContours(res, [goal], 0, (255, 0, 0), 5)
@@ -97,23 +97,23 @@ def main():
                     # calculate centroid
                     M = cv2.moments(goal)
                     if M['m00'] > 0:
-                        cx, cy = NerdyFunctions.calc_center(M)
+                        cx, cy = Functions.calc_center(M)
                         center = (cx, cy)
 
                         # draw centroid
                         cv2.circle(res, center, 5, (255, 0, 0), -1)
 
                         # calculate error in degrees
-                        error = cx - NerdyFunctions.FRAME_CX
-                        angle_to_turn = NerdyFunctions.calc_horiz_angle(error)
+                        error = cx - Functions.FRAME_CX
+                        angle_to_turn = Functions.calc_horiz_angle(error)
                         print("ANGLE TO TURN " + str(angle_to_turn))
 
                         # check if shooter is aligned
-                        aligned = NerdyFunctions.is_aligned(angle_to_turn)
+                        aligned = Functions.is_aligned(angle_to_turn)
                         print("ALIGNED " + str(aligned))
 
-                        NerdyFunctions.report_command(error)
-                        NerdyFunctions.report_y(cy)
+                        Functions.report_command(error)
+                        Functions.report_y(cy)
 
         elif gears:
             # only proceed if at least two contours (two blocks around peg) was found
@@ -125,15 +125,15 @@ def main():
                 for i in range(len(cnts)):
                     c = cnts[i]
                     area = cv2.contourArea(c)
-                    if NerdyConstants.MIN_GEAR_AREA < area < NerdyConstants.MAX_GEAR_AREA:
-                        goal = NerdyFunctions.polygon(c, 0.02)
+                    if Constants.MIN_GEAR_AREA < area < Constants.MAX_GEAR_AREA:
+                        goal = Functions.polygon(c, 0.02)
 
                         # draw the contour
                         cv2.drawContours(res, [goal], 0, (255, 0, 0), 5)
 
                         M = cv2.moments(goal)
                         if M['m00'] > 0:
-                            cx, cy = NerdyFunctions.calc_center(M)
+                            cx, cy = Functions.calc_center(M)
                             center = (cx, cy)
 
                             # draw centroid
@@ -144,26 +144,26 @@ def main():
 
                 # calculate center of two contours (blocks next to peg)
                 if len(centers_x) == 3 and len(centers_y) == 3:
-                    target_x = NerdyFunctions.avg(centers_x[1], centers_x[2])
-                    target_y = NerdyFunctions.avg(centers_y[1], centers_y[2])
+                    target_x = Functions.avg(centers_x[1], centers_x[2])
+                    target_y = Functions.avg(centers_y[1], centers_y[2])
                     target = (target_x, target_y)
                     cv2.circle(res, target, 5, (0, 255, 0), -1)
                     print(target_x)
                     print(target_y)
 
                     # calculate angle to turn
-                    error = target_x - NerdyConstants.FRAME_CX
-                    angle_to_turn = NerdyFunctions.calc_horiz_angle(error)
+                    error = target_x - Constants.FRAME_CX
+                    angle_to_turn = Functions.calc_horiz_angle(error)
                     print("ANGLE TO TURN " + str(angle_to_turn))
 
                     # check if gear mechanism is aligned
-                    aligned = NerdyFunctions.is_aligned(angle_to_turn)
+                    aligned = Functions.is_aligned(angle_to_turn)
                     print("ALIGNED " + str(aligned))
 
-                    NerdyFunctions.report_command(error)
+                    Functions.report_command(error)
 
         # results
-        cv2.imshow("NerdyVision", res)
+        cv2.imshow("Vision", res)
 
         try:
             # send to network tables

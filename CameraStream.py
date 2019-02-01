@@ -1,10 +1,6 @@
 from threading import Thread
 import cv2
-import NerdyFunctions, NerdyConstants
-
-"""USB camera stream class for optimized FPS modified by tedfoodlin"""
-__author__ = "pyimagesearch @http://www.pyimagesearch.com/"
-
+import Functions, Constants
 
 class CameraStream:
     def __init__(self, src=-1):
@@ -12,8 +8,8 @@ class CameraStream:
         # from the stream
         self.stream = cv2.VideoCapture(src)
         self.stream.set(cv2.CAP_PROP_EXPOSURE, -8.0)
-        self.stream.set(cv2.CAP_PROP_FRAME_WIDTH, NerdyConstants.FRAME_X)
-        self.stream.set(cv2.CAP_PROP_FRAME_HEIGHT, NerdyConstants.FRAME_Y)
+        self.stream.set(cv2.CAP_PROP_FRAME_WIDTH, Constants.FRAME_X)
+        self.stream.set(cv2.CAP_PROP_FRAME_HEIGHT, Constants.FRAME_Y)
 
         (self.grabbed, self.frame) = self.stream.read()
         self.img = self.frame.copy()
@@ -40,7 +36,7 @@ class CameraStream:
             # otherwise, read the next frame from the stream
             (self.grabbed, self.frame) = self.stream.read()
             self.img = self.frame.copy()
-            NerdyFunctions.draw_static(self.img)
+            Functions.draw_static(self.img)
             cv2.imwrite("/tmp/stream/img.jpg", self.img)
             cv2.imshow("stream", self.img)
 

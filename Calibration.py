@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 import math
 import os
-import NerdyConstants
+import Constants
 
 """FRC Vision Target Calibration (Trackbar)"""
 __author__ = "tedfoodlin"
@@ -10,8 +10,8 @@ __author__ = "tedfoodlin"
 # Capture video from camera
 cap = cv2.VideoCapture(0)
 
-cap.set(cv2.CAP_PROP_FRAME_WIDTH, NerdyConstants.FRAME_X)
-cap.set(cv2.CAP_PROP_FRAME_HEIGHT, NerdyConstants.FRAME_Y)
+cap.set(cv2.CAP_PROP_FRAME_WIDTH, Constants.FRAME_X)
+cap.set(cv2.CAP_PROP_FRAME_HEIGHT, Constants.FRAME_Y)
 
 cv2.namedWindow('result')
 
@@ -48,7 +48,7 @@ def main():
     cv2.createTrackbar('upper s', 'result', 0, 255, placeholder)
     cv2.createTrackbar('upper v', 'result', 0, 255, placeholder)
 
-    while 687:
+    while 580:
         ret, frame = cap.read()
 
         hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
@@ -65,10 +65,10 @@ def main():
             upper_green = np.array([upper_h, upper_s, upper_v])
             mask = cv2.inRange(hsv, lower_green, upper_green)
             result = cv2.bitwise_and(frame, frame, mask=mask)
-            cv2.imshow('NerdyCalibration', result)
+            cv2.imshow('Calibration', result)
         else:
             print("ERROR: make sure lower limit is lower than upper limit")
-            cv2.imshow('NerdyCalibration', frame)
+            cv2.imshow('Calibration', frame)
 
         print("lower limit: " + str(lower_h) + ", " + str(lower_s) + ", " + str(lower_v))
         print("upper limit: " + str(upper_h) + ", " + str(upper_s) + ", " + str(upper_v))

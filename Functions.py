@@ -1,5 +1,5 @@
 import cv2
-import NerdyConstants
+import Constants
 
 """FRC Image Processing Functions"""
 __author__ = "tedfoodlin"
@@ -15,10 +15,10 @@ def mask(lower, upper, frame):
 
 def draw_static(img):
     """Draw references on frame."""
-    cv2.line(img, (NerdyConstants.FRAME_CX, int(0.25 * NerdyConstants.FRAME_Y)),
-             (NerdyConstants.FRAME_CX, int(0.75 * NerdyConstants.FRAME_Y)), (255, 0, 0), 3)
-    cv2.line(img, (int(0.25 * NerdyConstants.FRAME_X), NerdyConstants.FRAME_CY),
-             (int(0.75 * NerdyConstants.FRAME_X), NerdyConstants.FRAME_CY), (255, 0, 0), 3)
+    cv2.line(img, (Constants.FRAME_CX, int(0.25 * Constants.FRAME_Y)),
+             (Constants.FRAME_CX, int(0.75 * Constants.FRAME_Y)), (255, 0, 0), 3)
+    cv2.line(img, (int(0.25 * Constants.FRAME_X), Constants.FRAME_CY),
+             (int(0.75 * Constants.FRAME_X), Constants.FRAME_CY), (255, 0, 0), 3)
 
 
 def polygon(c, epsil):
@@ -38,8 +38,8 @@ def calc_center(M):
 
 def calc_horiz_angle(error):
     """Calculate the horizontal angle from pixel error."""
-    #return math.atan(error / NerdyConstants.FOCAL_LENGTH)
-    return error * NerdyConstants.DEGREES_PER_PIXEL
+    #return math.atan(error / Constants.FOCAL_LENGTH)
+    return error * Constants.DEGREES_PER_PIXEL
 
 
 def avg(x1, x2):
@@ -69,10 +69,10 @@ def report_command(error):
 
 def report_y(cy):
     """Testing - report state of y to terminal."""
-    if NerdyConstants.FRAME_CY + 10 > cy > NerdyConstants.FRAME_CY - 10:
+    if Constants.FRAME_CY + 10 > cy > Constants.FRAME_CY - 10:
         print("Y Aligned")
     else:
-        if cy > NerdyConstants.FRAME_CY + 10:
+        if cy > Constants.FRAME_CY + 10:
             print("Aim Lower")
-        elif cy < NerdyConstants.FRAME_CY - 10:
+        elif cy < Constants.FRAME_CY - 10:
             print("Aim Higher")

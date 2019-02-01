@@ -4,20 +4,17 @@ import time
 import cv2
 import numpy as np
 from networktables import NetworkTable
-import NerdyConstants
-import NerdyFunctions
+import Constants
+import Functions
 logging.basicConfig(level=logging.DEBUG)
-
-"""2017 FRC Gear Peg Image Processing on Raspberry Pi with Microsoft Lifecam"""
-__author__ = "tedlin"
 
 if not os.path.isdir("/tmp/stream"):
    os.makedirs("/tmp/stream")
 
 cap = cv2.VideoCapture(0)
 
-cap.set(cv2.CAP_PROP_FRAME_WIDTH, NerdyConstants.FRAME_X)
-cap.set(cv2.CAP_PROP_FRAME_HEIGHT, NerdyConstants.FRAME_Y)
+cap.set(cv2.CAP_PROP_FRAME_WIDTH, Constants.FRAME_X)
+cap.set(cv2.CAP_PROP_FRAME_HEIGHT, Constants.FRAME_Y)
 
 
 def main():
@@ -37,15 +34,15 @@ def main():
               "-c tilt_absolute=0 "
               "-c zoom_absolute=0")
 
-    NetworkTable.setIPAddress("roboRIO-687-FRC.local")
+    NetworkTable.setIPAddress("roboRIO-580-FRC.local")
     NetworkTable.setClientMode()
     NetworkTable.initialize()
-    table = NetworkTable.getTable("NerdyVision")
-    print("NetworkTables initialized")
+    table = NetworkTable.getTable("Vision")
+    print("Network Table YEETED")
 
     angle_to_turn = 0
 
-    while 687:
+    while 580:
 
         aligned = False
         previous_angle_to_turn = angle_to_turn
@@ -57,7 +54,7 @@ def main():
         kernel = np.ones((5, 5), np.uint8)
         erosion = cv2.erode(frame, kernel, iterations=1)
         dilation = cv2.dilate(erosion, kernel, iterations=1)
-        res, mask = NerdyFunctions.mask(NerdyConstants.LOWER_GREEN, NerdyConstants.UPPER_GREEN, dilation)
+        res, mask = Functions.mask(Constants.LOWER_GREEN, Constants.UPPER_GREEN, dilation)
 
         _, cnts, _ = cv2.findContours(mask.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
         center = None
@@ -70,12 +67,12 @@ def main():
                 c = cnts[i]
                 area = cv2.contourArea(c)
 
-                if NerdyConstants.MIN_GEAR_AREA < area < NerdyConstants.MAX_GEAR_AREA:
+                if Constants.MIN_GEAR_AREA < area < Constants.MAX_GEAR_AREA:
                     x, y, w, h = cv2.boundingRect(c)
                     aspect_ratio = float(w) / h
 
-                    if NerdyConstants.MIN_GEAR_ASPECT < aspect_ratio < NerdyConstants.MAX_GEAR_ASPECT:
-                        goal = NerdyFunctions.polygon(c, 0.02)
+                    if Constants.MIN_GEAR_ASPECT < aspect_ratio < Constants.MAX_GEAR_ASPECT:
+                        goal = Functions.polygon(c, 0.02)
                         cv2.drawContours(res, [goal], 0, (255, 0, 0), 5)
                         M = cv2.moments(goal)
 
@@ -97,18 +94,18 @@ def main():
                 print(target_x)
                 print(target_y)
 
-                error = target_x - NerdyConstants.FRAME_CX
-                angle_to_turn = NerdyFunctions.calc_horiz_angle(error)
+                error = target_x - Constants.FRAME_CX
+                angle_to_turn = Functions.calc_horiz_angle(error)
                 print("ANGLE_TO_TURN: " + str(angle_to_turn))
-                aligned = NerdyFunctions.is_aligned(angle_to_turn)
+                aligned = Functions.is_aligned(angle_to_turn)
                 print("IS_ALIGNED: " + str(aligned))
 
                 processed_time = time.time()
                 delta_time = processed_time - capture_time
                 print("PROCESSED_TIME: " + str(delta_time))
 
-        # NerdyFunctions.draw_static(res)
-        # cv2.imshow("NerdyVision", res)
+        # Functions.draw_static(res)
+        # cv2.imshow("VisionTables", res)
         try:
             table.putBoolean('IS_ALIGNED', aligned)
             if previous_angle_to_turn != angle_to_turn:
@@ -130,6 +127,4 @@ def main():
     cap.release()
     cv2.destroyAllWindows()
 
-
-if __name__ == '__main__':
     main()

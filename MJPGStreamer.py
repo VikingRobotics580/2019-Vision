@@ -16,7 +16,7 @@ FRAME_CY = int(FRAME_Y/2)
 cap.set(cv2.CAP_PROP_FRAME_WIDTH, FRAME_X)
 cap.set(cv2.CAP_PROP_FRAME_HEIGHT, FRAME_Y)
 
-while 687:
+while 580:
     ret, frame = cap.read()
 
     cv2.line(frame, (FRAME_CX, int(0.25*FRAME_Y)), (FRAME_CX, int(0.75*FRAME_Y)), (0, 255, 0), 3)
